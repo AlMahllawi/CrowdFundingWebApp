@@ -1,4 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from .forms import RegistrationForm
 
-def index(request):
-    return render(request, 'auth/index.html', { 'pagetitle': "Authentication" })
+def register(request):
+    if request.method == "POST":
+        form = RegistrationForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect("home:index")  # بعد التسجيل يرجع للهوم
+    else:
+        form = RegistrationForm()
+    return render(request, "auth/register.html", {"form": form})
+
+
