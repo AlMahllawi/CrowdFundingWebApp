@@ -1,10 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
-  <h2 style="color: #060606;">Create New Account</h2>
+  <h1>Create New Account</h1>
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.non_field_errors }}
-
     <div>{{ form.first_name.label_tag }} {{ form.first_name }}</div>
     <div>{{ form.last_name.label_tag }} {{ form.last_name }}</div>
     <div>{{ form.email.label_tag }} {{ form.email }}</div>
@@ -12,7 +11,6 @@
     <div>{{ form.password1.label_tag }} {{ form.password1 }}</div>
     <div>{{ form.password2.label_tag }} {{ form.password2 }}</div>
     <div>{{ form.image.label_tag }} {{ form.image }}</div>
-
     <button type="submit">Register</button>
   </form>
-{% endblock %}
+{% endblock content %}

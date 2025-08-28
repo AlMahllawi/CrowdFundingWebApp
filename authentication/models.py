@@ -23,7 +23,7 @@ class UserManager(BaseUserManager):
 
 egypt_phone_validator = RegexValidator(
     regex=r"^01[0125]\d{8}$",
-    message="رقم الموبايل لازم يبدأ بـ 010 أو 011 أو 012 أو 015 ويكون 11 رقم."
+    message="Mobile phone number must starts with 010, 011, 012 or 015 having the length of 11 digits."
 )
 
 
@@ -45,4 +45,3 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def str(self):
         return self.email
-# Create your models here.
