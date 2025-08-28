@@ -1,9 +1,8 @@
 # Crowd-Funding Web Application
 Created with Django.
 
-## Tasks
-### Authentication System
-#### Registration
+## Authentication System
+### Registration
 - [ ] First name
 - [ ] Last name
 - [ ] Email
@@ -15,14 +14,14 @@ Created with Django.
 - [ ] Once the user register, he should receive an email with the activation link.
     - [ ] The user shouldn’t be able to login without activation. The activation link should expire after 24 hours.
 
-#### Login
+### Login
 - [ ] The user should be able to login after activation using his email and password
 
-##### Bonus
+#### Bonus
 - [ ] Allow users to login with facebook account
 - [ ] The user should have an option to reset his password if he forgot it to receive a password reset link to his email
 
-#### User Profile
+### User Profile
 - [ ] He can view his profile
 - [ ] He can view his projects
 - [ ] He can view his donations
@@ -31,31 +30,32 @@ Created with Django.
 - [ ] registration (Birthdate, facebook profile, country)
 - [ ] User can delete his account (Note that there must be a confirmation message before deleting)
 
-##### Bonus
+#### Bonus
 - [ ] User must enter his password to delete his account
 
-### Projects
+## Projects
 The user can create a project fund raise campaign which contains:
-#### Title
+### Title
 - [ ] Details
 - [ ] Category (from list of categories added previously by admins)
-#### Multiple pictures
+### Multiple pictures
 - [ ] Total target (i.e 250000 EGP)
-#### Multiple Tags
+### Multiple Tags
 - [ ] Set start/end time for the campaign
 - [ ] Users can view any project and donate to the total target
 - [ ] Users can add comments on the projects
-    - [ ] Bonus: Comments Replies
 - [ ] Users can report inappropriate projects
 - [ ] Users can report inappropriate comments
-#### Other
+#### Bonus
+- [ ] Comments Replies
+### Other
 - [ ] Users can rate the projects
 - [ ] Project creator can cancel the project if the donations are less than 25% of the target
 - [ ] Project page should show the overall average rating of the project
 - [ ] Project page should show the project pictures in a slider
 - [ ] Project page should show 4 other similar projects based on project tags
 
-### Homepage
+## Homepage
 - [ ] A slider to show the highest five rated running projects to encourage
 - [ ] users to donate
 - [ ] List of the latest 5 projects
