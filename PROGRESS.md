@@ -10,8 +10,8 @@
 - [x] Profile picture.
 
 ## Activation ✅
-- [ ] Send an e-mail with an activation link.
-- [ ] Link expires within 24 hours.
+- [x] Send an e-mail with an activation link.
+- [x] Link expires within 24 hours.
 
 ## Login ⛓️‍💥
 - [ ] Using registered e-mail and correct password.
