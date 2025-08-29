@@ -20,7 +20,7 @@
 - [ ] ~~Bonus: Login with Facebook.~~
 
 ## User Profile 👤
-- [ ] View profile.
+- [x] View profile.
 - [ ] View projects.
 - [ ] View donations.
 - [ ] Edit data (except for the e-mail).
