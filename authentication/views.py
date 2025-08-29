@@ -1,4 +1,5 @@
 import logging
+from smtplib import SMTPException
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
@@ -9,6 +10,7 @@ from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.db import IntegrityError
 from .utils import generate_activation_token
 from .forms import RegistrationForm
 
@@ -23,10 +25,20 @@ def render_registration_form(request, form, error_message=None):
 
 
 def register(request):
-    if request.method == "POST":
-        form = RegistrationForm(request.POST, request.FILES)
-        if not form.is_valid():
-            return render_registration_form(request, form, "Please correct the errors.")
+    if request.method != "POST":
+        return render_registration_form(request, RegistrationForm())
+
+    form = RegistrationForm(request.POST, request.FILES)
+    if not form.is_valid():
+        return render_registration_form(request, form, "Please correct the errors.")
+
+    try:
+        if User.objects.filter(email=form.cleaned_data.get("email")).exists():
+            return render_registration_form(
+                request,
+                form,
+                "This email is already registered. Please use a different email or log in.",
+            )
 
         user = form.save(commit=False)
         user.is_active = False
@@ -49,16 +61,36 @@ def register(request):
         )
         email_message.attach_alternative(content, "text/html")
 
-        
-        email_message.send(fail_silently=True)
-        messages.success(
-            request, "Please check your email to activate your account."
+        try:
+            email_message.send(fail_silently=False)
+            messages.success(
+                request, "Please check your email to activate your account."
+            )
+            return redirect("home:index")
+        except SMTPException as e:
+            logger.error("Failed to send activation email to %s: %s", user.email, e)
+            user.delete()
+            return render_registration_form(
+                request,
+                form,
+                "Failed to send activation email. Please try again later or contact support.",
+            )
+        except Exception as e:
+            logger.error("Unexpected error sending email to %s: %s", user.email, e)
+            user.delete()
+            return render_registration_form(
+                request,
+                form,
+                "An unexpected error occurred. Please try again or contact support.",
+            )
+    except IntegrityError as e:
+        logger.error("Database error during registration for %s: %s", user.email, e)
+        return render_registration_form(
+            request,
+            form,
+            "An error occurred during registration. Please try again.",
         )
-        return redirect("home:index")
-    else:
-        form = RegistrationForm()
 
-    return render_registration_form(request, form)
 
 
 def activate(request, uidb64, token):
