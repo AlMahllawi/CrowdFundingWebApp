@@ -1,5 +1,10 @@
 from django import forms
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import authenticate, get_user_model
 from .models import User
+
+UserModel = get_user_model()
+
 
 class RegistrationForm(forms.ModelForm):
     password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
@@ -23,3 +28,34 @@ class RegistrationForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+class LoginForm(AuthenticationForm):
+    username = forms.EmailField(
+        label="Email", widget=forms.EmailInput(attrs={"autofocus": True})
+    )
+
+    def clean(self):
+        email = self.cleaned_data.get("username")
+        password = self.cleaned_data.get("password")
+
+        if email is not None and password:
+            self.user_cache = authenticate(
+                self.request, username=email, password=password
+            )
+
+            if self.user_cache is None:
+                try:
+                    user = User.objects.get(email=email)
+                    if not user.is_active:
+                        raise forms.ValidationError(
+                            "Activate your account first (check your email) to be able to login.",
+                            code="inactive",
+                        )
+                except UserModel.DoesNotExist:
+                    pass  # User doesn't exist, proceed with generic error
+                raise forms.ValidationError(
+                    "Invalid email or password.", code="invalid_login"
+                )
+
+        return self.cleaned_data

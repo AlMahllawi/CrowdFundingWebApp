@@ -1,7 +1,8 @@
 import logging
 from smtplib import SMTPException
 from django.conf import settings
-from django.contrib.auth import get_user_model
+from django.contrib import messages
+from django.contrib.auth import login as auth_login, get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
@@ -9,36 +10,34 @@ from django.utils.html import strip_tags
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 from django.shortcuts import render, redirect
-from django.contrib import messages
+from django.urls import reverse
 from django.db import IntegrityError
 from .utils import generate_activation_token
-from .forms import RegistrationForm
+from .forms import RegistrationForm, LoginForm
+
 
 logger = logging.getLogger("auth")
 User = get_user_model()
 
 
-def render_registration_form(request, form, error_message=None):
-    if error_message:
-        messages.error(request, error_message)
-    return render(request, "auth/register.html", {"form": form})
-
-
 def register(request):
+    template = "auth/register.html"
+
     if request.method != "POST":
-        return render_registration_form(request, RegistrationForm())
+        return render(request, template, {"form": RegistrationForm()})
 
     form = RegistrationForm(request.POST, request.FILES)
     if not form.is_valid():
-        return render_registration_form(request, form, "Please correct the errors.")
+        messages.error(request, "Please correct the errors.")
+        return render(request, template, {"form": form})
 
     try:
         if User.objects.filter(email=form.cleaned_data.get("email")).exists():
-            return render_registration_form(
+            messages.error(
                 request,
-                form,
                 "This email is already registered. Please use a different email or log in.",
             )
+            return render(request, template, {"form": form})
 
         user = form.save(commit=False)
         user.is_active = False
@@ -49,7 +48,9 @@ def register(request):
             "auth/activation-email.html",
             {
                 "activation_link": f"{request.scheme}://{request.get_host()}"
-                + f"/auth/activate/{uid}/{token}/",
+                + reverse(
+                    "authentication:activate", kwargs={"uidb64": uid, "token": token}
+                ),
                 "user": user,
             },
         )
@@ -70,27 +71,25 @@ def register(request):
         except SMTPException as e:
             logger.error("Failed to send activation email to %s: %s", user.email, e)
             user.delete()
-            return render_registration_form(
+            messages.error(
                 request,
-                form,
                 "Failed to send activation email. Please try again later or contact support.",
             )
-        except Exception as e:
-            logger.error("Unexpected error sending email to %s: %s", user.email, e)
-            user.delete()
-            return render_registration_form(
-                request,
-                form,
-                "An unexpected error occurred. Please try again or contact support.",
-            )
+            return render(request, template, {"form": form})
     except IntegrityError as e:
         logger.error("Database error during registration for %s: %s", user.email, e)
-        return render_registration_form(
-            request,
-            form,
-            "An error occurred during registration. Please try again.",
+        messages.error(
+            request, "An error occurred during registration. Please try again."
         )
-
+        return render(request, template, {"form": form})
+    except Exception as e:  # pylint: disable=W0718
+        logger.error("Unexpected error registering %s: %s", user.email, e)
+        user.delete()
+        messages.error(
+            request,
+            "An unexpected error occurred. Please try again or contact support.",
+        )
+        return render(request, template, {"form": form})
 
 
 def activate(request, uidb64, token):
@@ -106,7 +105,24 @@ def activate(request, uidb64, token):
         messages.success(
             request, "Your account has been activated successfully! You can now log in."
         )
-        return redirect("home:index")
+        return redirect("authentication:login")
     else:
         messages.error(request, "The activation link is invalid or has expired.")
-        return redirect("register")
+        return redirect("authentication:register")
+
+
+def login(request):
+    template = "auth/login.html"
+
+    if request.method != "POST":
+        return render(request, template, {"form": LoginForm()})
+
+    form = LoginForm(data=request.POST, request=request)
+    if not form.is_valid():
+        messages.error(request, "Please correct the errors.")
+        return render(request, template, {"form": form})
+
+    user = form.get_user()
+    auth_login(request, user)
+    messages.success(request, f"Welcome back, {user.first_name} {user.last_name}!")
+    return redirect("home:index")

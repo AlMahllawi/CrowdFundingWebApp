@@ -14,8 +14,8 @@
 - [x] Link expires within 24 hours.
 
 ## Login ⛓️‍💥
-- [ ] Using registered e-mail and correct password.
-- [ ] Users shouldn’t be able to login without activation.
+- [x] Using registered e-mail and correct password.
+- [x] Users shouldn’t be able to login without activation.
 - [ ] ~~Bonus: Reset password link via e-mail.~~
 - [ ] ~~Bonus: Login with Facebook.~~
 
