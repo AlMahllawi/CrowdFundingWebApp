@@ -7,12 +7,21 @@
         <meta name="description" content="">
         <meta name="keywords" content="">
         <link rel="stylesheet" href="{% static 'style/main.css' %}">
-        <title>{{ pagetitle|default:"Crowd-Funding" }}</title>
+        <title>
+            {% block title %}
+                {{ pagetitle|default:"Crowd-Funding" }}
+            {% endblock title %}
+        </title>
+        {% bootstrap_css %}
         {% block head %}
         {% endblock head %}
     </head>
     <body>
-        {% block content %}
-        {% endblock content %}
+        <div class="container">
+            {% bootstrap_messages %}
+            {% block content %}
+            {% endblock content %}
+        </div>
+        {% bootstrap_javascript %}
     </body>
 </html>
