@@ -1,16 +1,9 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% block content %}
   <h1>Create New Account</h1>
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {{ form.non_field_errors }}
-    <div>{{ form.first_name.label_tag }} {{ form.first_name }}</div>
-    <div>{{ form.last_name.label_tag }} {{ form.last_name }}</div>
-    <div>{{ form.email.label_tag }} {{ form.email }}</div>
-    <div>{{ form.phone.label_tag }} {{ form.phone }}</div>
-    <div>{{ form.password1.label_tag }} {{ form.password1 }}</div>
-    <div>{{ form.password2.label_tag }} {{ form.password2 }}</div>
-    <div>{{ form.image.label_tag }} {{ form.image }}</div>
+    {{ form.as_p }}
     <button type="submit">Register</button>
   </form>
 {% endblock content %}
