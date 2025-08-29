@@ -5,6 +5,7 @@ app_name = "authentication"
 
 urlpatterns = [
     path("register/", views.register, name="register"),
+    path('activate/<uidb64>/<token>/', views.activate, name='activate'),
 ]
 
 
