@@ -21,6 +21,9 @@ User = get_user_model()
 
 
 def register(request):
+    if request.user.is_authenticated:
+        return redirect("home:index")
+
     template = "auth/register.html"
 
     if request.method != "POST":
@@ -67,7 +70,7 @@ def register(request):
             messages.success(
                 request, "Please check your email to activate your account."
             )
-            return redirect("home:index")
+            return redirect("authentication:login")
         except SMTPException as e:
             logger.error("Failed to send activation email to %s: %s", user.email, e)
             user.delete()
@@ -99,19 +102,27 @@ def activate(request, uidb64, token):
     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
 
-    if user is not None and default_token_generator.check_token(user, token):
-        user.is_active = True
-        user.save()
-        messages.success(
-            request, "Your account has been activated successfully! You can now log in."
-        )
-        return redirect("authentication:login")
-    else:
+    if (
+        user is None
+        or user.is_active
+        or not default_token_generator.check_token(user, token)
+    ):
         messages.error(request, "The activation link is invalid or has expired.")
         return redirect("authentication:register")
 
+    user.is_active = True
+    user.save()
+    messages.success(
+        request, "Your account has been activated successfully! You can now log in."
+    )
+
+    return redirect("authentication:login")
+
 
 def login(request):
+    if request.user.is_authenticated:
+        return redirect("home:index")
+
     template = "auth/login.html"
 
     if request.method != "POST":
