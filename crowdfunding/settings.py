@@ -101,6 +101,13 @@ LOGGING = {
             'class': 'logging.StreamHandler',
         },
     },
+    'loggers': {
+        'auth': {
+            'handlers': ['file', 'console'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    },
 }
 
 

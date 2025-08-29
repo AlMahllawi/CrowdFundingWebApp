@@ -1,3 +1,4 @@
+import logging
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
@@ -11,6 +12,7 @@ from django.contrib import messages
 from .utils import generate_activation_token
 from .forms import RegistrationForm
 
+logger = logging.getLogger("auth")
 User = get_user_model()
 
 
