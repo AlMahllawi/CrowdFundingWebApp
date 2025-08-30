@@ -22,8 +22,8 @@ Securely manage user accounts, control access, and protect user data.
 
 ## User Profile 👤
 - [x] View profile.
-- [ ] View projects.
-- [ ] View donations.
+- [ ] ~~View projects.~~
+- [ ] ~~View donations.~~
 - [ ] Edit data (except for the e-mail).
 - [ ] Extra optional info (Birthdate, Facebook Profile, Country).
 - [ ] Delete account (Note that there must be a confirmation message before deleting).
