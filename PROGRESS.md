@@ -1,4 +1,5 @@
 # Authentication System 🤝
+Securely manage user accounts, control access, and protect user data.
 
 ## Registration ➕
 - [x] First name.

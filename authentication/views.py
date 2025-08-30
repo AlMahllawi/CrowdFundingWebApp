@@ -2,7 +2,11 @@ import logging
 from smtplib import SMTPException
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import login as auth_login, get_user_model
+from django.contrib.auth import (
+    login as auth_login,
+    logout as auth_logout,
+    get_user_model,
+)
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.decorators import login_required
 from django.core.mail import EmailMultiAlternatives
@@ -142,5 +146,10 @@ def login(request):
 
 @login_required
 def profile(request):
-    user = request.user
-    return render(request, "auth/profile.html", {"user": user})
+    return render(request, "auth/profile.html")
+
+
+@login_required
+def logout(request):
+    auth_logout(request)
+    return redirect("home:index")
