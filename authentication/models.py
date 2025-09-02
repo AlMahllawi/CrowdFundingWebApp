@@ -1,5 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    PermissionsMixin,
+    BaseUserManager,
+)
 from django.core.validators import RegexValidator
 from django.utils import timezone
 
@@ -23,7 +27,7 @@ class UserManager(BaseUserManager):
 
 egypt_phone_validator = RegexValidator(
     regex=r"^01[0125]\d{8}$",
-    message="Mobile phone number must starts with 010, 011, 012 or 015 having the length of 11 digits."
+    message="Mobile phone number must starts with 010, 011, 012 or 015 having the length of 11 digits.",
 )
 
 
@@ -43,5 +47,5 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["first_name", "last_name", "phone"]
 
-    def str(self):
-        return self.email
+    def __str__(self):
+        return str(self.email)
