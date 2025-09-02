@@ -62,7 +62,6 @@ class RatingAdmin(admin.ModelAdmin):
 @admin.register(Report)
 class ReportAdmin(admin.ModelAdmin):
     list_display = (
-        "report_type",
         "project",
         "comment",
         "user",

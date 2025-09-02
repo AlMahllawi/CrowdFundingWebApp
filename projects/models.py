@@ -100,21 +100,21 @@ class Rating(models.Model):
     project = models.ForeignKey(
         Project, on_delete=models.CASCADE, related_name="ratings"
     )
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True
-    )
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     value = models.IntegerField(choices=[(i, i) for i in range(1, 6)])
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["project", "user"], name="unique_project_user_rating"
+            )
+        ]
 
     def __str__(self):
         return f"Rating {self.value} for {self.project.title} by {self.user.username}"
 
 
 class Report(models.Model):
-    REPORT_TYPE = [
-        ("project", "Project"),
-        ("comment", "Comment"),
-    ]
-    report_type = models.CharField(max_length=20, choices=REPORT_TYPE)
     project = models.ForeignKey(
         Project, on_delete=models.CASCADE, null=True, blank=True
     )
@@ -127,7 +127,7 @@ class Report(models.Model):
     is_resolved = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Report by {self.user.username} - {self.report_type}"
+        return f"Report by {self.user.username} - {'Project' if self.project else 'Comment'}"
 
 
 class Donation(models.Model):
