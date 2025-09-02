@@ -1,5 +1,15 @@
-from django.db import models
 from django.conf import settings
+from django.db import models
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return str(self.name)
+
+    class Meta:
+        ordering = ["name"]
 
 
 class Project(models.Model):
@@ -11,19 +21,28 @@ class Project(models.Model):
         ("other", "Other"),
     ]
 
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE, related_name="projects")
-    title = models.CharField(max_length=255)
+    creator = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="projects"
+    )
+    title = models.CharField(max_length=255, primary_key=True)
     details = models.TextField()
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
     target_amount = models.DecimalField(max_digits=12, decimal_places=2)
-    current_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
-    tags = models.CharField(max_length=255, blank=True)
+    tags = models.ManyToManyField(Tag, related_name="projects", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def str(self):
-        return self.title
+    def __str__(self):
+        return str(self.title)
+
+    @property
+    def current_amount(self):
+        return self.donations.aggregate(models.Sum("amount"))["amount__sum"] or 0
+
+    @property
+    def average_rating(self):
+        return self.ratings.aggregate(models.Avg("value"))["value__avg"] or 0
 
     def progress_percentage(self):
         if self.target_amount > 0:
@@ -33,33 +52,52 @@ class Project(models.Model):
     def can_be_cancelled(self):
         return self.current_amount < (0.25 * self.target_amount)
 
+    def save(self, *args, **kwargs):
+        tags = kwargs.pop("tags", None)
+        super().save(*args, **kwargs)
+        if tags:
+            self.tags.clear()
+            for tag_name in tags:
+                tag, _ = Tag.objects.get_or_create(name=tag_name)
+                self.tags.add(tag)
+
 
 class ProjectImage(models.Model):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="images")
+    project = models.ForeignKey(
+        Project, on_delete=models.CASCADE, related_name="images"
+    )
     image = models.ImageField(upload_to="project_images/")
 
-    def str(self):
+    def __str__(self):
         return f"Image for {self.project.title}"
 
 
 class Comment(models.Model):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="comments")
+    project = models.ForeignKey(
+        Project, on_delete=models.CASCADE, related_name="comments"
+    )
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     content = models.TextField()
-    parent = models.ForeignKey("self", null=True, blank=True, on_delete=models.CASCADE, related_name="replies")
+    parent = models.ForeignKey(
+        "self", null=True, blank=True, on_delete=models.CASCADE, related_name="replies"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def str(self):
+    def __str__(self):
         return f"Comment by {self.user} on {self.project}"
 
 
 class Rating(models.Model):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="ratings")
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    project = models.ForeignKey(
+        Project, on_delete=models.CASCADE, related_name="ratings"
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True
+    )
     value = models.IntegerField(choices=[(i, i) for i in range(1, 6)])
 
-    def str(self):
-        return f"Rating {self.value} for {self.project.title}"
+    def __str__(self):
+        return f"Rating {self.value} for {self.project.title} by {self.user.username}"
 
 
 class Report(models.Model):
@@ -68,22 +106,28 @@ class Report(models.Model):
         ("comment", "Comment"),
     ]
     report_type = models.CharField(max_length=20, choices=REPORT_TYPE)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, blank=True)
-    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, null=True, blank=True)
+    project = models.ForeignKey(
+        Project, on_delete=models.CASCADE, null=True, blank=True
+    )
+    comment = models.ForeignKey(
+        Comment, on_delete=models.CASCADE, null=True, blank=True
+    )
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     reason = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     is_resolved = models.BooleanField(default=False)
 
-    def str(self):
+    def __str__(self):
         return f"Report by {self.user.username} - {self.report_type}"
 
 
 class Donation(models.Model):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="donations")
+    project = models.ForeignKey(
+        Project, on_delete=models.CASCADE, related_name="donations"
+    )
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def str(self):
+    def __str__(self):
         return f"{self.user.username} donated {self.amount} to {self.project.title}"

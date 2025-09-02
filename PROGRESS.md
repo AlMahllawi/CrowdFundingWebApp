@@ -22,36 +22,36 @@ Securely manage user accounts, control access, and protect user data.
 
 ## User Profile 👤
 - [x] View profile.
-- [ ] ~~View projects.~~
-- [ ] ~~View donations.~~
-- [ ] Edit data (except for the e-mail).
-- [ ] Extra optional info (Birthdate, Facebook Profile, Country).
-- [ ] Delete account (Note that there must be a confirmation message before deleting).
+- [ ] <u>View projects.</u>
+- [ ] <u>View donations.</u>
+- [ ] <u>Edit data (except for the e-mail).</u>
+- [ ] <u>Extra optional info (Birthdate, Facebook Profile, Country).</u>
+- [ ] <u>Delete account (Note that there must be a confirmation message before deleting).</u>
 - [ ] ~~Bonus: User must enter the password to delete the account.~~
 
 # Projects 🚩
 A project fund-raise campaign created by users.
 
 ## Content 📝
-- [ ] Title.
-- [ ] Details.
-- [ ] Category (from list of categories added previously by admins).
+- [x] Title.
+- [x] Details.
+- [x] Category (from list of categories added previously by admins).
 - [ ] Multiple pictures.
-- [ ] Total target (i.e 250000 EGP).
-- [ ] Multiple Tags.
-- [ ] Start/End date for the campaign.
+- [x] Total target (i.e 250000 EGP).
+- [x] Multiple Tags.
+- [x] Start/End date for the campaign.
 
 ## Users Interaction 👥
-- [ ] View any project and donate to the total target.
-- [ ] Add comments on the projects.
+- [x] View any project and donate to the total target.
+- [x] Add comments on the projects.
 - [ ] ~~Bonus: Reply to comments.~~
-- [ ] Report inappropriate projects.
-- [ ] Report inappropriate comments.
-- [ ] Rate the projects.
-- [ ] Project creator can cancel the project if the donations are less than 25% of the target.
+- [ ] <u>Report inappropriate projects.</u>
+- [ ] <u>Report inappropriate comments.</u>
+- [x] Rate the projects.
+- [ ] <u>Project creator can cancel the project if the donations are less than 25% of the target.
 
 ## Project Page 🪧
-- [ ] Overall average rating of the project.
+- [x] Overall average rating of the project.
 - [ ] Project pictures in a slider.
 - [ ] 4 other similar projects based on project tags.
 

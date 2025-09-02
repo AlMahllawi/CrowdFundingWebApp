@@ -1,50 +1,75 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.http import HttpResponseNotAllowed
 from .models import Project, Comment, Donation, Rating, Report
+from .forms import ProjectForm, CommentForm, RatingForm
 
 
-def project_list(request):
+@login_required
+def create(request):
+    if request.method == "POST":
+        form = ProjectForm(request.POST)
+        if form.is_valid():
+            project = form.save(commit=False)
+            project.creator = request.user
+            project.save(tags=form.cleaned_data.get("tags_input", []))
+            messages.success(request, "Project created successfully!")
+            return redirect("projects:all")
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = ProjectForm()
+
+    return render(request, "projects/create.html", {"form": form})
+
+
+def all_projects(request):
     query = request.GET.get("q")
     if query:
         projects = Project.objects.filter(title__icontains=query)
     else:
         projects = Project.objects.all()
-    return render(request, "projects/project_list.html", {"projects": projects})
+    return render(request, "projects/all.html", {"projects": projects})
 
 
-def project_detail(request, project_id):
-    project = get_object_or_404(Project, id=project_id)
+def detail(request, title):
+    project = get_object_or_404(Project, title=title)
     comments = Comment.objects.filter(project=project)
     donations = Donation.objects.filter(project=project)
-    return render(request, "projects/project_detail.html", {
-        "project": project,
-        "comments": comments,
-        "donations": donations,
-    })
+    return render(
+        request,
+        "projects/detail.html",
+        {
+            "project": project,
+            "rating": project.average_rating,
+            "comments": comments,
+            "donations": donations,
+            "forms": {"comment": CommentForm, "rating": RatingForm},
+        },
+    )
 
-def add_comment(request, project_id):
-    if request.method == "POST":
-        content = request.POST.get("content")
-        project = get_object_or_404(Project, id=project_id)
-        Comment.objects.create(user=request.user, project=project, content=content)
-        return redirect("projects:project_detail", project_id=project.id)
 
-def donate_to_project(request, project_id):
+def __action__(request, title, model, field_name):
     if request.method == "POST":
-        amount = request.POST.get("amount")
-        project = get_object_or_404(Project, id=project_id)
-        Donation.objects.create(user=request.user, project=project, amount=amount)
-        return redirect("projects:project_detail", project_id=project.id)
+        value = request.POST.get(field_name)
+        project = get_object_or_404(Project, title=title)
+        model.objects.create(user=request.user, project=project, **{field_name: value})
+        return redirect("projects:detail", title=project.title)
+    return HttpResponseNotAllowed(permitted_methods=["POST"])
 
-def report_project(request, project_id):
-    if request.method == "POST":
-        reason = request.POST.get("reason")
-        project = get_object_or_404(Project, id=project_id)
-        Report.objects.create(user=request.user, project=project, reason=reason)
-        return redirect("projects:project_detail", project_id=project.id)
 
-def rate_project(request, project_id):
-    if request.method == "POST":
-        rating = request.POST.get("rating")
-        project = get_object_or_404(Project, id=project_id)
-        Rating.objects.create(user=request.user, project=project, rating=rating)
-        return redirect("projects:project_detail", project_id=project.id)
+def comment(request, title):
+    return __action__(request, title, Comment, "content")
+
+
+def donate(request, title):
+    return __action__(request, title, Donation, "amount")
+
+
+def report(request, title):
+    return __action__(request, title, Report, "reason")
+
+
+def rate(request, title):
+    return __action__(request, title, Rating, "value")

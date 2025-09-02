@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>{{ project.title }}</h2>
+  <p>{{ project.details }}</p>
+  <p>Target: {{ project.target_amount }}</p>
+  <p>Collected: {{ project.current_amount }}</p>
+  <p>Progress: {{ project.progress_percentage }}%</p>
+  <p>Average Rating: {{ rating|default:"No rating yet" }}</p>
+  <h3>Donate</h3>
+  <form method="post" action="{% url 'projects:donate' project.title %}">
+    {% csrf_token %}
+    <input type="number" step="0.01" name="amount" required>
+    <button type="submit">Donate</button>
+  </form>
+  <h3>Project Images</h3>
+  <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+      {% for image in project.images.all %}
+        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+          <img src="{{ image.image.url }}" class="d-block w-100">
+        </div>
+      {% empty %}
+        <div class="carousel-item active">
+          <p>No images uploaded yet.</p>
+        </div>
+      {% endfor %}
+    </div>
+    <button class="carousel-control-prev"
+            type="button"
+            data-bs-target="#carouselExample"
+            data-bs-slide="prev">
+      <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next"
+            type="button"
+            data-bs-target="#carouselExample"
+            data-bs-slide="next">
+      <span class="carousel-control-next-icon"></span>
+    </button>
+  </div>
+  <h3>Comments</h3>
+  <ul>
+    {% for comment in comments %}
+      <li>
+        <b>{{ comment.user.username }}</b>: {{ comment.content }}
+        <small>({{ comment.created_at|date:"Y-m-d H:i" }})</small>
+      </li>
+    {% empty %}
+      <li>No comments yet.</li>
+    {% endfor %}
+  </ul>
+  <form method="post" action="{% url 'projects:comment' project.title %}">
+    {% csrf_token %}
+    {{ forms.comment.as_p }}
+    <button type="submit">Add Comment</button>
+  </form>
+  <h3>Rate this project</h3>
+  <form method="post" action="{% url 'projects:rate' project.title %}">
+    {% csrf_token %}
+    {{ forms.rating.as_p }}
+    <button type="submit">Submit Rating</button>
+  </form>
+  <h3>Similar Projects</h3>
+  <ul>
+    {% for sp in similar_projects %}
+      <li>
+        <a href="{% url 'projects:detail' sp.title %}">{{ sp.title }}</a>
+      </li>
+    {% empty %}
+      <li>No similar projects found.</li>
+    {% endfor %}
+  </ul>
+{% endblock content %}
