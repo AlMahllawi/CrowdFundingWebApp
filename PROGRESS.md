@@ -48,7 +48,7 @@ A project fund-raise campaign created by users.
 - [ ] <u>Report inappropriate projects.</u>
 - [ ] <u>Report inappropriate comments.</u>
 - [x] Rate the projects.
-- [ ] <u>Project creator can cancel the project if the donations are less than 25% of the target.</u>
+- [x] Project creator can cancel the project if the donations are less than 25% of the target.
 
 ## Project Page 🪧
 - [x] Overall average rating of the project.

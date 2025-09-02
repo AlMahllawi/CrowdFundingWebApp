@@ -51,6 +51,27 @@ def detail(request, title):
     )
 
 
+@login_required
+def cancel(request, title):
+    if request.method != "POST":
+        return HttpResponseNotAllowed(permitted_methods=["POST"])
+
+    project = get_object_or_404(Project, title=title)
+
+    if request.user != project.creator:
+        messages.error(request, "You are not authorized to cancel this project.")
+        return redirect("projects:detail", title=title)
+
+    if not project.cancellable:
+        messages.error(request, "This project cannot be canceled.")
+        return redirect("projects:detail", title=title)
+
+    project.delete()
+    messages.success(request, "Project canceled successfully.")
+
+    return redirect("projects:all")
+
+
 def __action__(request, title, model, field_name):
     if request.method == "POST":
         value = request.POST.get(field_name)

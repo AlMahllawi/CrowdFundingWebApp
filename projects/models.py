@@ -49,8 +49,9 @@ class Project(models.Model):
             return round((self.current_amount / self.target_amount) * 100, 2)
         return 0
 
-    def can_be_cancelled(self):
-        return self.current_amount < (0.25 * self.target_amount)
+    @property
+    def cancellable(self):
+        return self.current_amount < (0.25 * float(self.target_amount))
 
     def similar_projects(self, limit=4):
         return (
