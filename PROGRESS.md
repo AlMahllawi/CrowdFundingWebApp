@@ -36,7 +36,7 @@ A project fund-raise campaign created by users.
 - [x] Title.
 - [x] Details.
 - [x] Category (from list of categories added previously by admins).
-- [ ] Multiple pictures.
+- [ ] <u>Multiple pictures.</u>
 - [x] Total target (i.e 250000 EGP).
 - [x] Multiple Tags.
 - [x] Start/End date for the campaign.
@@ -45,8 +45,8 @@ A project fund-raise campaign created by users.
 - [x] View any project and donate to the total target.
 - [x] Add comments on the projects.
 - [ ] ~~Bonus: Reply to comments.~~
-- [ ] <u>Report inappropriate projects.</u>
-- [ ] <u>Report inappropriate comments.</u>
+- [x] Report inappropriate projects.
+- [x] Report inappropriate comments.
 - [x] Rate the projects.
 - [x] Project creator can cancel the project if the donations are less than 25% of the target.
 

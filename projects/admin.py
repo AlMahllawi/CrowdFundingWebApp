@@ -69,7 +69,7 @@ class ReportAdmin(admin.ModelAdmin):
         "is_resolved",
         "created_at",
     )
-    list_filter = ("report_type", "is_resolved")
+    list_filter = ("is_resolved",)
     search_fields = ("reason",)
 
 

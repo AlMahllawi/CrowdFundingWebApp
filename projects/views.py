@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponseNotAllowed
 from .models import Project, Comment, Donation, Rating, Report
-from .forms import ProjectForm, CommentForm, RatingForm
+from .forms import ProjectForm, CommentForm, RatingForm, ReportForm
 
 
 @login_required
@@ -97,3 +97,46 @@ def report(request, title):
 
 def rate(request, title):
     return __action__(request, title, Rating, "value")
+
+
+@login_required
+def report(request, title=None, comment_id=None):
+    if title:
+        obj = get_object_or_404(Project, title=title)
+    elif comment_id:
+        obj = get_object_or_404(Comment, id=comment_id)
+    else:
+        messages.error(request, "Invalid report request.")
+        return redirect("projects:all")
+
+    def init():
+        return render(
+            request,
+            "projects/report.html",
+            {
+                "form": ReportForm(),
+                "report_project": title is not None,
+                "obj": obj,
+            },
+        )
+
+    if request.method != "POST":
+        return init()
+
+    form = ReportForm(request.POST)
+    if not form.is_valid():
+        messages.error(request, "Please correct the errors in the form.")
+        return init()
+
+    report = form.save(commit=False)
+    report.user = request.user
+    if comment_id:
+        report.comment = obj
+    else:
+        report.project = obj
+    report.save()
+    messages.success(request, f"Reported successfully.")
+    return redirect(
+        "projects:detail",
+        title=obj.project.title if comment_id else obj.title,
+    )
