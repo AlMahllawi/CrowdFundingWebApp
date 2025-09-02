@@ -140,7 +140,7 @@ def login(request):
 
     user = form.get_user()
     auth_login(request, user)
-    messages.success(request, f"Welcome back, {user.first_name} {user.last_name}!")
+    messages.success(request, f"Welcome back, {user.username}!")
     return redirect("home:index")
 
 

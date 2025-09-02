@@ -38,6 +38,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone = models.CharField(max_length=11, validators=[egypt_phone_validator])
     image = models.ImageField(upload_to="profiles/", blank=True, null=True)
 
+    @property
+    def username(self):
+        return self.first_name + " " + self.last_name
+
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
