@@ -1,10 +1,4 @@
 {
-    "pylint.args": [
-        "--load-plugins=pylint_django",
-        "--disable=C0114",
-        "--disable=C0115",
-        "--disable=C0116"
-    ],
     "cSpell.words": [
         "endfor",
         "forloop",
