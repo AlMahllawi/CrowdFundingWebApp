@@ -44,7 +44,8 @@ class Project(models.Model):
     def average_rating(self):
         return self.ratings.aggregate(models.Avg("value"))["value__avg"] or 0
 
-    def progress_percentage(self):
+    @property
+    def progress(self):
         if self.target_amount > 0:
             return round((self.current_amount / self.target_amount) * 100, 2)
         return 0

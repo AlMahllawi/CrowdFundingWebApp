@@ -72,13 +72,15 @@ def cancel(request, title):
     return redirect("projects:all")
 
 
+@login_required
 def __action__(request, title, model, field_name):
-    if request.method == "POST":
-        value = request.POST.get(field_name)
-        project = get_object_or_404(Project, title=title)
-        model.objects.create(user=request.user, project=project, **{field_name: value})
-        return redirect("projects:detail", title=project.title)
-    return HttpResponseNotAllowed(permitted_methods=["POST"])
+    if request.method != "POST":
+        return HttpResponseNotAllowed(permitted_methods=["POST"])
+
+    value = request.POST.get(field_name)
+    project = get_object_or_404(Project, title=title)
+    model.objects.create(user=request.user, project=project, **{field_name: value})
+    return redirect("projects:detail", title=project.title)
 
 
 def comment(request, title):

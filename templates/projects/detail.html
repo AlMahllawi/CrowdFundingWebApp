@@ -4,7 +4,7 @@
   <p>{{ project.details }}</p>
   <p>Target: {{ project.target_amount }}</p>
   <p>Collected: {{ project.current_amount }}</p>
-  <p>Progress: {{ project.progress_percentage }}%</p>
+  <p>Progress: {{ project.progress }}%</p>
   <p>Average Rating: {{ rating|default:"No rating yet" }}</p>
   {% if project.cancellable and user == project.creator %}
     <form method="post" action="{% url 'projects:cancel' project.title %}">
@@ -16,11 +16,15 @@
     </form>
   {% endif %}
   <h3>Donate</h3>
-  <form method="post" action="{% url 'projects:donate' project.title %}">
-    {% csrf_token %}
-    <input type="number" step="0.01" name="amount" required>
-    <button type="submit">Donate</button>
-  </form>
+  {% if user.is_authenticated %}
+    <form method="post" action="{% url 'projects:donate' project.title %}">
+      {% csrf_token %}
+      <input type="number" step="0.01" name="amount" required>
+      <button type="submit">Donate</button>
+    </form>
+  {% else %}
+    <p>Login to be able to donate.</p>
+  {% endif %}
   <h3>Project Images</h3>
   <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
     <div class="carousel-inner">
@@ -58,17 +62,25 @@
       <li>No comments yet.</li>
     {% endfor %}
   </ul>
-  <form method="post" action="{% url 'projects:comment' project.title %}">
-    {% csrf_token %}
-    {{ forms.comment.as_p }}
-    <button type="submit">Add Comment</button>
-  </form>
+  {% if user.is_authenticated %}
+    <form method="post" action="{% url 'projects:comment' project.title %}">
+      {% csrf_token %}
+      {{ forms.comment.as_p }}
+      <button type="submit">Add Comment</button>
+    </form>
+  {% else %}
+    <p>Login to be able to comment.</p>
+  {% endif %}
   <h3>Rate this project</h3>
-  <form method="post" action="{% url 'projects:rate' project.title %}">
-    {% csrf_token %}
-    {{ forms.rating.as_p }}
-    <button type="submit">Submit Rating</button>
-  </form>
+  {% if user.is_authenticated %}
+    <form method="post" action="{% url 'projects:rate' project.title %}">
+      {% csrf_token %}
+      {{ forms.rating.as_p }}
+      <button type="submit">Submit Rating</button>
+    </form>
+  {% else %}
+    <p>Login to be able to rate.</p>
+  {% endif %}
   <h3>Similar Projects</h3>
   <ul>
     {% for sp in similar_projects %}
