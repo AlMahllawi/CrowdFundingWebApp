@@ -52,6 +52,13 @@ class Project(models.Model):
     def can_be_cancelled(self):
         return self.current_amount < (0.25 * self.target_amount)
 
+    def similar_projects(self, limit=4):
+        return (
+            Project.objects.filter(tags__in=self.tags.all())
+            .exclude(title=self.title)
+            .distinct()[:limit]
+        )
+
     def save(self, *args, **kwargs):
         tags = kwargs.pop("tags", None)
         super().save(*args, **kwargs)

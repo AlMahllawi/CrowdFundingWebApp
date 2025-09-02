@@ -46,6 +46,7 @@ def detail(request, title):
             "comments": comments,
             "donations": donations,
             "forms": {"comment": CommentForm, "rating": RatingForm},
+            "similar_projects": project.similar_projects(),
         },
     )
 

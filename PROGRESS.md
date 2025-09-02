@@ -53,7 +53,7 @@ A project fund-raise campaign created by users.
 ## Project Page 🪧
 - [x] Overall average rating of the project.
 - [ ] Project pictures in a slider.
-- [ ] 4 other similar projects based on project tags.
+- [x] 4 other similar projects based on project tags.
 
 # Homepage 🏠
 - [ ] A slider with the highest five rated running projects.
