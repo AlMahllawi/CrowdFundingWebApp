@@ -18,7 +18,8 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.db import IntegrityError
 from .utils import generate_activation_token
-from .forms import RegistrationForm, LoginForm
+from .forms import RegistrationForm, LoginForm, ProfileForm, DeleteAccountForm
+from projects.models import Project, Donation
 
 
 logger = logging.getLogger("auth")
@@ -146,7 +147,38 @@ def login(request):
 
 @login_required
 def profile(request):
-    return render(request, "auth/profile.html")
+    user = request.user
+    projects = Project.objects.filter(creator=user)
+    donations = Donation.objects.filter(user=user)
+    profile_form = ProfileForm(instance=user)
+    delete_form = DeleteAccountForm(user=user)
+
+    if request.method == "POST":
+        if "update_profile" in request.POST:
+            profile_form = ProfileForm(request.POST, request.FILES, instance=user)
+            if profile_form.is_valid():
+                profile_form.save()
+                messages.success(request, "Profile updated successfully.")
+                return redirect("authentication:profile")
+
+        elif "delete_account" in request.POST:
+            delete_form = DeleteAccountForm(user=user, data=request.POST)
+            if delete_form.is_valid():
+                user.delete()
+                logout(request)
+                messages.success(request, "Account deleted successfully.")
+                return redirect("home:index")
+
+    return render(
+        request,
+        "auth/profile.html",
+        {
+            "profile_form": profile_form,
+            "delete_form": delete_form,
+            "projects": projects,
+            "donations": donations,
+        },
+    )
 
 
 @login_required

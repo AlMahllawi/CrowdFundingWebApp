@@ -25,18 +25,28 @@ class UserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 
-egypt_phone_validator = RegexValidator(
-    regex=r"^01[0125]\d{8}$",
-    message="Mobile phone number must starts with 010, 011, 012 or 015 having the length of 11 digits.",
-)
-
-
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
-    phone = models.CharField(max_length=11, validators=[egypt_phone_validator])
+    phone = models.CharField(
+        max_length=11,
+        validators=[
+            RegexValidator(
+                regex=r"^01[0125]\d{8}$",
+                message="Mobile phone number must starts with 010, 011, 012 or 015 having the length of 11 digits.",
+            )
+        ],
+    )
     image = models.ImageField(upload_to="profiles/", blank=True, null=True)
+    birthdate = models.DateField(blank=True, null=True)
+    facebook_profile = models.URLField(blank=True, null=True)
+    country = models.CharField(
+        max_length=50,
+        choices=[("Egypt", "Egypt"), ("Others", "Others")],
+        blank=True,
+        null=True,
+    )
 
     @property
     def username(self):

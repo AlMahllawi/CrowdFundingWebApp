@@ -1,22 +1,71 @@
 {% extends "base.html" %}
 {% block content %}
-    <h1>{{ user.username }}'s Profile</h1>
-    <div>
-        <strong>Profile Picture:</strong>
-        <br>
-        {% if user.image %}
-            <img src="{{ user.image.url }}"
-                 alt="Profile Picture"
-                 height="128px"
-                 width="128px">
-        {% else %}
-            <p>No profile picture uploaded</p>
-        {% endif %}
-    </div>
-    <div>
-        <strong>Email:</strong> {{ user.email }}
-    </div>
-    <div>
-        <strong>Phone:</strong> {{ user.phone }}
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-2xl font-bold mb-6">User Profile</h1>
+        <div class="mb-8">
+            <h2 class="text-xl font-semibold mb-4">Edit</h2>
+            <form method="post" enctype="multipart/form-data" class="space-y-4">
+                {% csrf_token %}
+                <input type="hidden" name="update_profile">
+                {% for field in profile_form %}
+                    <div class="flex flex-col">
+                        <label for="{{ field.id_for_label }}" class="mb-1">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}<p class="text-red-500 text-sm">{{ field.errors }}</p>{% endif %}
+                    </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary">Update Profile</button>
+            </form>
+        </div>
+        <div class="mb-8">
+            <h2 class="text-xl font-semibold mb-4 text-red-600">Delete</h2>
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                <input type="hidden" name="delete_account">
+                <div class="flex flex-col">
+                    <label for="{{ delete_form.password.id_for_label }}" class="mb-1">{{ delete_form.password.label }}</label>
+                    {{ delete_form.password }}
+                    {% if delete_form.password.errors %}<p class="text-red-500 text-sm">{{ delete_form.password.errors }}</p>{% endif %}
+                </div>
+                <button type="submit"
+                        class="btn btn-danger"
+                        onclick="return confirm('Are you sure you want to delete your account? This action cannot be undone.')">
+                    Delete Account
+                </button>
+            </form>
+        </div>
+        <div class="mb-8">
+            <h2 class="text-xl font-semibold mb-4">Projects</h2>
+            {% if projects %}
+                <ul class="space-y-4">
+                    {% for project in projects %}
+                        <li class="border p-4 rounded">
+                            <h3 class="font-medium">{{ project.title }}</h3>
+                            <p>Category: {{ project.get_category_display }}</p>
+                            <p>Target: {{ project.target_amount }}</p>
+                            <p>Period: {{ project.start_date|date:"Y-m-d" }} to {{ project.end_date|date:"Y-m-d" }}</p>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No projects found.</p>
+            {% endif %}
+        </div>
+        <div class="mb-8">
+            <h2 class="text-xl font-semibold mb-4">Donations</h2>
+            {% if donations %}
+                <ul class="space-y-4">
+                    {% for donation in donations %}
+                        <li class="border p-4 rounded">
+                            <p>Project: {{ donation.project.title }}</p>
+                            <p>Amount: {{ donation.amount }}</p>
+                            <p>Date: {{ donation.created_at|date:"Y-m-d H:i" }}</p>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No donations found.</p>
+            {% endif %}
+        </div>
     </div>
 {% endblock content %}

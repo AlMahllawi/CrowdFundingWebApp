@@ -17,17 +17,17 @@ Securely manage user accounts, control access, and protect user data.
 ## Login ⛓️‍💥
 - [x] Using registered e-mail and correct password.
 - [x] Users shouldn’t be able to login without activation.
-- [ ] ~~Bonus: Reset password link via e-mail.~~
-- [ ] ~~Bonus: Login with Facebook.~~
+- [ ] ~~**Bonus**: Reset password link via e-mail.~~
+- [ ] ~~**Bonus**: Login with Facebook.~~
 
 ## User Profile 👤
 - [x] View profile.
-- [ ] <u>View projects.</u>
-- [ ] <u>View donations.</u>
-- [ ] <u>Edit data (except for the e-mail).</u>
-- [ ] <u>Extra optional info (Birthdate, Facebook Profile, Country).</u>
-- [ ] <u>Delete account (Note that there must be a confirmation message before deleting).</u>
-- [ ] ~~Bonus: User must enter the password to delete the account.~~
+- [x] View projects.
+- [x] View donations.
+- [x] Edit data (except for the e-mail).
+- [x] Extra optional info (Birthdate, Facebook Profile, Country).
+- [x] Delete account (Note that there must be a confirmation message before deleting).
+- [x] **Bonus**: User must enter the password to delete the account.
 
 # Projects 🚩
 A project fund-raise campaign created by users.
@@ -44,7 +44,7 @@ A project fund-raise campaign created by users.
 ## Users Interaction 👥
 - [x] View any project and donate to the total target.
 - [x] Add comments on the projects.
-- [ ] ~~Bonus: Reply to comments.~~
+- [ ] ~~**Bonus**: Reply to comments.~~
 - [x] Report inappropriate projects.
 - [x] Report inappropriate comments.
 - [x] Rate the projects.

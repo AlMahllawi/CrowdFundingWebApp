@@ -1,6 +1,11 @@
+import re
+from datetime import date
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm
+from django.utils import timezone
 from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth.forms import AuthenticationForm, UserChangeForm
+from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 from .models import User
 
 UserModel = get_user_model()
@@ -59,3 +64,73 @@ class LoginForm(AuthenticationForm):
                 )
 
         return self.cleaned_data
+
+
+class ProfileForm(UserChangeForm):
+    birthdate = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={"type": "date"}),
+        label="Birth Date",
+    )
+    facebook_profile = forms.URLField(
+        required=False,
+        label="Facebook Profile",
+        validators=[
+            RegexValidator(
+                regex=r"^https?://(www\.)?facebook\.com/[\w\.\-]+/?$",
+                message="Please enter a valid Facebook profile URL.",
+            )
+        ],
+    )
+    country = forms.ChoiceField(
+        choices=[("Egypt", "Egypt"), ("Others", "Others")],
+        required=False,
+        label="Country",
+    )
+
+    class Meta:
+        model = User
+        fields = [
+            "first_name",
+            "last_name",
+            "email",
+            "phone",
+            "image",
+            "birthdate",
+            "facebook_profile",
+            "country",
+        ]
+        widgets = {
+            "email": forms.EmailInput(attrs={"disabled": "disabled"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields.pop("password", None)
+
+    def clean_birthdate(self):
+        birthdate = self.cleaned_data.get("birthdate")
+        if birthdate:
+            today = date.today()
+            age = (
+                today.year
+                - birthdate.year
+                - ((today.month, today.day) < (birthdate.month, birthdate.day))
+            )
+            if age < 18:
+                raise ValidationError("You must be at least 18 years old.")
+        return birthdate
+
+
+class DeleteAccountForm(forms.Form):
+    password = forms.CharField(widget=forms.PasswordInput, label="Confirm Password")
+
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
+
+    def clean_password(self):
+        password = self.cleaned_data.get("password")
+        if not authenticate(email=self.user.email, password=password):
+            raise ValidationError("Incorrect password")
+        return password
