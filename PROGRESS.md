@@ -60,4 +60,4 @@ A project fund-raise campaign created by users.
 - [x] List of the latest 5 projects.
 - [ ] List of latest 5 featured projects (selected by admins).
 - [ ] List of the categories.
-- [ ] Search bar (search projects by title or tag).
+- [x] Search bar (search projects by title or tag).

@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load static %}
+{% block head %}
+    <link rel="stylesheet" href="{% static 'black-carousel-control.css' %}">
+{% endblock head %}
+{% block content %}
+    <h2 class="mb-3">Top Rated Projects</h2>
+    <div id="topProjectsCarousel"
+         class="carousel slide"
+         data-bs-ride="carousel">
+        <div class="carousel-inner">
+            {% for project in top_projects %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <div class="p-5 text-center bg-white">
+                        <h3>
+                            <a href="{% url 'projects:detail' project.title %}">{{ project.title }}</a>
+                        </h3>
+                        <p>{{ project.description|truncatewords:20 }}</p>
+                        <span class="badge bg-success">⭐ {{ project.rating }}</span>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="carousel-item active">
+                    <div class="p-5 text-center bg-white">
+                        <h3>No Projects Yet</h3>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <button class="carousel-control-prev"
+                type="button"
+                data-bs-target="#topProjectsCarousel"
+                data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next"
+                type="button"
+                data-bs-target="#topProjectsCarousel"
+                data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+    </div>
+    <h2 class="mt-5 mb-3">Latest Projects</h2>
+    <div class="row">
+        {% for project in latest_projects %}
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ project.title }}</h5>
+                        <p class="card-text flex-grow-1">{{ project.description|truncatewords:15 }}</p>
+                        <a href="{% url 'projects:detail' project.title %}"
+                           class="btn btn-primary mt-auto">View Details</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p>No projects found.</p>
+        {% endfor %}
+    </div>
+    <div class="container mt-4">
+        <form method="GET" action="{% url 'home:index' %}" class="mb-4">
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+        {% if query %}
+            <h3>Search Results for "{{ query }}"</h3>
+        {% else %}
+            <h3>Search Projects</h3>
+        {% endif %}
+        {% if projects %}
+            <div class="row">
+                {% for project in projects %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ project.title }}</h5>
+                                <p class="card-text">{{ project.details|truncatewords:20 }}</p>
+                                <p class="card-text">
+                                    <strong>Category:</strong> {{ project.get_category_display }}
+                                    <br>
+                                    <strong>Tags:</strong>
+                                    {% for tag in project.tags.all %}
+                                        {{ tag.name }}
+                                        {% if not forloop.last %},{% endif %}
+                                    {% endfor %}
+                                </p>
+                                <a href="{% url 'projects:detail' project.title %}"
+                                   class="btn btn-primary">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            {% if is_paginated %}
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link"
+                                   href="?page={{ page_obj.previous_page_number }}&query={{ query }}">Previous</a>
+                            </li>
+                        {% endif %}
+                        {% for num in page_obj.paginator.page_range %}
+                            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                                <a class="page-link" href="?page={{ num }}&query={{ query }}">{{ num }}</a>
+                            </li>
+                        {% endfor %}
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link"
+                                   href="?page={{ page_obj.next_page_number }}&query={{ query }}">Next</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        {% else %}
+            <p>No projects found matching your search criteria.</p>
+        {% endif %}
+    </div>
+    <footer>
+        Created By:
+        <br>
+        Mohammad AlMahllawi
+        <br>
+        Kholoud Montaser
+        <br>
+        Abdullatif Mohamed
+    </footer>
+{% endblock content %}

@@ -67,6 +67,7 @@ class LoginForm(AuthenticationForm):
 
 
 class ProfileForm(UserChangeForm):
+    email = forms.EmailField(disabled=True, required=False)
     birthdate = forms.DateField(
         required=False,
         widget=forms.DateInput(attrs={"type": "date"}),
@@ -100,13 +101,11 @@ class ProfileForm(UserChangeForm):
             "facebook_profile",
             "country",
         ]
-        widgets = {
-            "email": forms.EmailInput(attrs={"disabled": "disabled"}),
-        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields.pop("password", None)
+        self.initial["email"] = self.instance.email
 
     def clean_birthdate(self):
         birthdate = self.cleaned_data.get("birthdate")
