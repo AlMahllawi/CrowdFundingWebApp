@@ -2,8 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponseNotAllowed
-from .models import Project, Comment, Donation, Rating, Report
-from .forms import ProjectForm, CommentForm, RatingForm, ReportForm
+from .models import Project, ProjectImage, Comment, Donation, Rating, Report
+from .forms import ProjectForm, ProjectImageForm, CommentForm, RatingForm, ReportForm
 
 
 @login_required
@@ -42,12 +42,62 @@ def detail(request, title):
         "projects/detail.html",
         {
             "project": project,
-            "rating": project.average_rating,
             "comments": comments,
             "donations": donations,
-            "forms": {"comment": CommentForm, "rating": RatingForm},
-            "similar_projects": project.similar_projects(),
+            "forms": {
+                "comment": CommentForm,
+                "rating": RatingForm,
+                "image": ProjectImageForm,
+            },
         },
+    )
+
+
+@login_required
+def upload_image(request, title):
+    def end(message=None, level=messages.error):
+        if message:
+            level(request, message)
+        return redirect("projects:detail", title=title)
+
+    if request.method != "POST":
+        return end()
+
+    project = get_object_or_404(Project, title=title)
+
+    if request.user != project.creator:
+        return end("You are not authorized to upload images for this project.")
+
+    form = ProjectImageForm(request.POST, request.FILES)
+    if not form.is_valid():
+        return end("Invalid image.")
+
+    if not form.cleaned_data.get("image"):
+        return end(request, "No valid image was selected.")
+
+    image = form.save(commit=False)
+    image.project = project
+    image.save()
+    return end(f"Uploaded image successfully.", messages.success)
+
+
+@login_required
+def delete_image(request, image_id):
+    image = get_object_or_404(ProjectImage, id=image_id)
+    project = image.project
+    if request.user != project.creator:
+        messages.error(request, "You are not authorized to delete this image.")
+        return redirect("projects:detail", title=project.title)
+
+    if request.method == "POST":
+        image.delete()
+        messages.success(request, "Image deleted successfully.")
+        return redirect("projects:detail", title=project.title)
+
+    return render(
+        request,
+        "projects/delete_image_confirm.html",
+        {"image": image, "project": project},
     )
 
 

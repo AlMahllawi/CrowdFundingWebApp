@@ -75,7 +75,7 @@ class ProjectImage(models.Model):
     project = models.ForeignKey(
         Project, on_delete=models.CASCADE, related_name="images"
     )
-    image = models.ImageField(upload_to="project_images/")
+    image = models.ImageField(upload_to="project-images/")
 
     def __str__(self):
         return f"Image for {self.project.title}"

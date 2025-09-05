@@ -36,7 +36,7 @@ A project fund-raise campaign created by users.
 - [x] Title.
 - [x] Details.
 - [x] Category (from list of categories added previously by admins).
-- [ ] <u>Multiple pictures.</u>
+- [x] Multiple pictures.
 - [x] Total target (i.e 250000 EGP).
 - [x] Multiple Tags.
 - [x] Start/End date for the campaign.
@@ -52,7 +52,7 @@ A project fund-raise campaign created by users.
 
 ## Project Page 🪧
 - [x] Overall average rating of the project.
-- [ ] Project pictures in a slider.
+- [x] Project pictures in a slider.
 - [x] 4 other similar projects based on project tags.
 
 # Homepage 🏠

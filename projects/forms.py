@@ -1,5 +1,5 @@
 from django import forms
-from .models import Project, Comment, Rating, Report
+from .models import Project, ProjectImage, Comment, Rating, Report
 
 
 class ProjectForm(forms.ModelForm):
@@ -41,6 +41,12 @@ class ProjectForm(forms.ModelForm):
                     f'Tag "{tag}" is too long (max 50 characters).'
                 )
         return tags
+
+
+class ProjectImageForm(forms.ModelForm):
+    class Meta:
+        model = ProjectImage
+        fields = ["image"]
 
 
 class CommentForm(forms.ModelForm):
