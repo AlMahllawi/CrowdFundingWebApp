@@ -32,6 +32,13 @@ class Project(models.Model):
     end_date = models.DateTimeField()
     tags = models.ManyToManyField(Tag, related_name="projects", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    is_featured = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.title
 
     def __str__(self):
         return str(self.title)
