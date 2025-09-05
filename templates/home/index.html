@@ -94,7 +94,7 @@
         {% endfor %}
     </div>
     <div class="container mt-4">
-        <form method="GET" action="{% url 'home:index' %}" class="mb-4">
+        <form method="get" action="{% url 'home:index' %}" class="mb-4">
             {{ form.as_p }}
             <button type="submit" class="btn btn-primary">Search</button>
         </form>

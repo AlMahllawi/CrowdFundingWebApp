@@ -24,15 +24,6 @@ def create(request):
     return render(request, "projects/create.html", {"form": form})
 
 
-def all_projects(request):
-    query = request.GET.get("q")
-    if query:
-        projects = Project.objects.filter(title__icontains=query)
-    else:
-        projects = Project.objects.all()
-    return render(request, "projects/all.html", {"projects": projects})
-
-
 def detail(request, title):
     project = get_object_or_404(Project, title=title)
     comments = Comment.objects.filter(project=project)
@@ -42,8 +33,11 @@ def detail(request, title):
         "projects/detail.html",
         {
             "project": project,
-            "comments": comments,
             "donations": donations,
+            "comments": comments,
+            "user_rating": Rating.objects.filter(
+                project=project, user=request.user
+            ).first(),
             "forms": {
                 "comment": CommentForm,
                 "rating": RatingForm,
@@ -123,30 +117,40 @@ def cancel(request, title):
 
 
 @login_required
-def __action__(request, title, model, field_name):
+def __action__(request, title, model, field_name, edit=False):
     if request.method != "POST":
         return HttpResponseNotAllowed(permitted_methods=["POST"])
 
     value = request.POST.get(field_name)
     project = get_object_or_404(Project, title=title)
-    model.objects.create(user=request.user, project=project, **{field_name: value})
+    if edit:
+        instance = model.objects.filter(project=project, user=request.user).first()
+        setattr(instance, field_name, value)
+        instance.save()
+    else:
+        model.objects.create(user=request.user, project=project, **{field_name: value})
+
     return redirect("projects:detail", title=project.title)
-
-
-def comment(request, title):
-    return __action__(request, title, Comment, "content")
-
-
-def donate(request, title):
-    return __action__(request, title, Donation, "amount")
 
 
 def report(request, title):
     return __action__(request, title, Report, "reason")
 
 
+def donate(request, title):
+    return __action__(request, title, Donation, "amount")
+
+
+def comment(request, title):
+    return __action__(request, title, Comment, "content")
+
+
 def rate(request, title):
     return __action__(request, title, Rating, "value")
+
+
+def edit_rating(request, title):
+    return __action__(request, title, Rating, "value", True)
 
 
 @login_required

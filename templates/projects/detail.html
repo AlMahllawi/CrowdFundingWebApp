@@ -106,12 +106,20 @@
   {% endif %}
   <h3>Rate this project</h3>
   {% if user.is_authenticated %}
-    {% comment %} TODO: Check if rated already {% endcomment %}
-    <form method="post" action="{% url 'projects:rate' project.title %}">
-      {% csrf_token %}
-      {{ forms.rating.as_p }}
-      <button type="submit" class="btn btn-primary">Submit Rating</button>
-    </form>
+    {% if user_rating %}
+      <p>You have already rated this project ({{ user_rating.value }}/5).</p>
+      <form method="post" action="{% url 'projects:edit-rating' project.title %}">
+        {% csrf_token %}
+        {{ forms.rating.as_p }}
+        <button type="submit" class="btn btn-primary">Update Rating</button>
+      </form>
+    {% else %}
+      <form method="post" action="{% url 'projects:rate' project.title %}">
+        {% csrf_token %}
+        {{ forms.rating.as_p }}
+        <button type="submit" class="btn btn-primary">Submit Rating</button>
+      </form>
+    {% endif %}
   {% else %}
     <p>Login to be able to rate.</p>
   {% endif %}

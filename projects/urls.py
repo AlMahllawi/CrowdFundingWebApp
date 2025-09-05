@@ -4,7 +4,6 @@ from . import views
 app_name = "projects"
 
 urlpatterns = [
-    path("", views.all_projects, name="all"),
     path("create/", views.create, name="create"),
     path("view/<str:title>/", views.detail, name="detail"),
     path("upload-image/<str:title>/", views.upload_image, name="upload-image"),
@@ -14,6 +13,7 @@ urlpatterns = [
     path("donate/<str:title>/", views.donate, name="donate"),
     path("report/<str:title>/", views.report, name="report"),
     path("rate/<str:title>/", views.rate, name="rate"),
+    path("edit-rating/<str:title>/", views.edit_rating, name="edit-rating"),
     path("report/<str:title>/", views.report, name="report"),
     path("report-comment/<int:comment_id>/", views.report, name="report"),
 ]

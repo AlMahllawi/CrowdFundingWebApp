@@ -45,7 +45,9 @@
                 <ul class="space-y-4">
                     {% for project in projects %}
                         <li class="border p-4 rounded">
-                            <h3 class="font-medium">{{ project.title }}</h3>
+                            <h3 class="font-medium">
+                                <a href={% url 'projects:detail' project.title %}>{{ project.title }}</a>
+                            </h3>
                             <p>Category: {{ project.get_category_display }}</p>
                             <p>Target: {{ project.target_amount }}</p>
                             <p>Period: {{ project.start_date|date:"Y-m-d" }} to {{ project.end_date|date:"Y-m-d" }}</p>
@@ -62,7 +64,9 @@
                 <ul class="space-y-4">
                     {% for donation in donations %}
                         <li class="border p-4 rounded">
-                            <p>Project: {{ donation.project.title }}</p>
+                            <p>
+                                Project: <a href={% url 'projects:detail' donation.project.title %}>{{ donation.project.title }}</a>
+                            </p>
                             <p>Amount: {{ donation.amount }}</p>
                             <p>Date: {{ donation.created_at|date:"Y-m-d H:i" }}</p>
                         </li>
