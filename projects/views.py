@@ -15,7 +15,7 @@ def create(request):
             project.creator = request.user
             project.save(tags=form.cleaned_data.get("tags_input", []))
             messages.success(request, "Project created successfully!")
-            return redirect("projects:all")
+            return redirect("home:index")
         else:
             messages.error(request, "Please correct the errors below.")
     else:
@@ -113,7 +113,7 @@ def cancel(request, title):
     project.delete()
     messages.success(request, "Project canceled successfully.")
 
-    return redirect("projects:all")
+    return redirect("home:index")
 
 
 @login_required
@@ -161,7 +161,7 @@ def report(request, title=None, comment_id=None):
         obj = get_object_or_404(Comment, id=comment_id)
     else:
         messages.error(request, "Invalid report request.")
-        return redirect("projects:all")
+        return redirect("home:index")
 
     def init():
         return render(
