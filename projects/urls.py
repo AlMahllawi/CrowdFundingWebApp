@@ -16,4 +16,5 @@ urlpatterns = [
     path("edit-rating/<str:title>/", views.edit_rating, name="edit-rating"),
     path("report/<str:title>/", views.report, name="report"),
     path("report-comment/<int:comment_id>/", views.report, name="report"),
+    path("feature/<str:title>/", views.feature, name="feature"),
 ]

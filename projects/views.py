@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.http import HttpResponseNotAllowed
 from .models import Project, ProjectImage, Comment, Donation, Rating, Report
@@ -194,3 +194,17 @@ def report(request, title=None, comment_id=None):
         "projects:detail",
         title=obj.project.title if comment_id else obj.title,
     )
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def feature(request, title):
+    project = get_object_or_404(Project, title=title)
+
+    if request.method == "POST":
+        project.is_featured = not project.is_featured
+        project.save()
+        status = "featured" if project.is_featured else "unfeatured"
+        messages.success(request, f"Project '{project.title}' has been {status}.")
+
+    return redirect("projects:detail", title=project.title)

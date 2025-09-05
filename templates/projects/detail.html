@@ -6,6 +6,19 @@
   <p>Collected: {{ project.current_amount }}</p>
   <p>Progress: {{ project.progress }}%</p>
   <p>Average Rating: {{ project.average_rating|default:"No rating yet" }}</p>
+  {% if user.is_staff %}
+    <form method="post" action="{% url 'projects:feature' project.title %}">
+      {% csrf_token %}
+      <button type="submit"
+              class="btn {% if project.is_featured %}btn-warning{% else %}btn-success{% endif %} mt-2">
+        {% if project.is_featured %}
+          Unfeature
+        {% else %}
+          Feature
+        {% endif %}
+      </button>
+    </form>
+  {% endif %}
   {% if user.is_authenticated %}
     <a href="{% url 'projects:report' title=project.title %}"
        class="btn btn-danger btn-sm">Report Project</a>
