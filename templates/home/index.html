@@ -1,13 +1,73 @@
 {% extends "base.html" %}
-{% block body %}
+{% block content %}
+    <div class="container mt-4">
+        <form method="GET" action="{% url 'home:index' %}" class="mb-4">
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+        {% if query %}
+            <h3>Search Results for "{{ query }}"</h3>
+        {% else %}
+            <h3>Search Projects</h3>
+        {% endif %}
+        {% if projects %}
+            <div class="row">
+                {% for project in projects %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ project.title }}</h5>
+                                <p class="card-text">{{ project.details|truncatewords:20 }}</p>
+                                <p class="card-text">
+                                    <strong>Category:</strong> {{ project.get_category_display }}
+                                    <br>
+                                    <strong>Tags:</strong>
+                                    {% for tag in project.tags.all %}
+                                        {{ tag.name }}
+                                        {% if not forloop.last %},{% endif %}
+                                    {% endfor %}
+                                </p>
+                                <a href="{% url 'projects:detail' project.title %}"
+                                   class="btn btn-primary">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            {% if is_paginated %}
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link"
+                                   href="?page={{ page_obj.previous_page_number }}&query={{ query }}">Previous</a>
+                            </li>
+                        {% endif %}
+                        {% for num in page_obj.paginator.page_range %}
+                            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                                <a class="page-link" href="?page={{ num }}&query={{ query }}">{{ num }}</a>
+                            </li>
+                        {% endfor %}
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link"
+                                   href="?page={{ page_obj.next_page_number }}&query={{ query }}">Next</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        {% else %}
+            <p>No projects found matching your search criteria.</p>
+        {% endif %}
+    </div>
     <footer>
         Created By:
         <br>
         Mohammad AlMahllawi
         <br>
-        kholoud montaser
+        Kholoud Montaser
         <br>
-        abdullatif mohamed
-        
+        Abdullatif Mohamed
     </footer>
-{% endblock body %}
+{% endblock content %}
