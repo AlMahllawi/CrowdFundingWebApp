@@ -56,8 +56,8 @@ A project fund-raise campaign created by users.
 - [x] 4 other similar projects based on project tags.
 
 # Homepage 🏠
-- [ ] A slider with the highest five rated running projects.
-- [ ] List of the latest 5 projects.
+- [x] A slider with the highest five rated running projects.
+- [x] List of the latest 5 projects.
 - [ ] List of latest 5 featured projects (selected by admins).
 - [ ] List of the categories.
 - [ ] Search bar (search projects by title or tag).
